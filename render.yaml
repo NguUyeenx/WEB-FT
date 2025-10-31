@@ -14,7 +14,8 @@ services:
     region: oregon
     plan: starter
     buildCommand: |
-      npm install -g pnpm@8.15.0
+      corepack enable
+      corepack prepare pnpm@latest --activate
       pnpm install --frozen-lockfile
       cd apps/api
       pnpm prisma generate
@@ -46,7 +47,7 @@ services:
       - key: STRIPE_WEBHOOK_SECRET
         sync: false
       - key: IMAGE_DOMAIN_ALLOWLIST
-        value: cdn.example.com
+        value: cdn.example.com  # Update with actual CDN domains
       - key: CORS_ALLOWLIST
         value: http://localhost:3000,https://*.vercel.app
     autoDeploy: true

@@ -26,8 +26,11 @@ const nextConfig = {
         const urlMatch = trimmed.match(/^(?:https?:\/\/)?([^/]+)/);
         const hostname = urlMatch ? urlMatch[1] : trimmed;
         
+        // Default to https for security when protocol not specified
+        const protocol = trimmed.startsWith('http://') ? 'http' : 'https';
+        
         return {
-          protocol: trimmed.startsWith('https://') ? 'https' : 'http',
+          protocol: protocol,
           hostname: hostname,
         };
       }).filter(pattern => pattern.hostname);
