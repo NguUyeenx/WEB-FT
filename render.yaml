@@ -1,6 +1,6 @@
 databases:
   - name: shoestore-db
-    plan: starter
+    plan: free
     postgresMajorVersion: 15
 
 services:
