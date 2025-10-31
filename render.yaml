@@ -15,8 +15,8 @@ services:
       pnpm -C packages/shared build
       pnpm -C apps/api prisma:generate
       pnpm -C apps/api build
-    startCommand: node apps/api/dist/src/index.js
-    postdeploy: |
+    startCommand: |
+      node apps/api/dist/src/index.js
       pnpm -C apps/api prisma:migrate:deploy
       pnpm -C apps/api prisma:seed
     healthCheckPath: /health
