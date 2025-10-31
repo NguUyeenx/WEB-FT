@@ -23,7 +23,9 @@ export function formatPriceVN(price: number): string {
  * Generate a safe ID from a string (for slugs, etc.)
  */
 export function safeId(str: string): string {
-  return str
+  // Limit input length to prevent ReDoS
+  const truncated = str.slice(0, 200);
+  return truncated
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
