@@ -1,49 +1,48 @@
+databases:
+  - name: shoestore-db
+    plan: starter
+    postgresMajorVersion: 15
+
 services:
   - type: web
     name: shoestore-api
     env: node
-    plan: free
-    branch: main
-    rootDir: apps/api
-    autoDeploy: true
-    healthCheckPath: /health
-
+    plan: starter
+    region: oregon
+    rootDir: .
     buildCommand: |
-      corepack enable
-      pnpm install --frozen-lockfile
-      pnpm prisma generate
-      pnpm build
-
-    startCommand: node dist/index.js
-
-    postDeployCommand: pnpm prisma migrate deploy
-
+      pnpm i --frozen-lockfile
+      pnpm -C packages/shared build
+      pnpm -C apps/api prisma:generate
+      pnpm -C apps/api build
+    startCommand: node apps/api/dist/src/index.js
+    postdeploy: |
+      pnpm -C apps/api prisma:migrate:deploy
+      pnpm -C apps/api prisma:seed
+    healthCheckPath: /health
+    autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
-
-      - key: CORS_ALLOWLIST
-        value: http://localhost:3000,https://*.vercel.app
-
-      - key: JWT_SECRET
-        generateValue: true
-      - key: JWT_REFRESH_SECRET
-        generateValue: true
-      - key: COOKIE_SECRET
-        generateValue: true
-      - key: CSRF_SECRET
-        generateValue: true
-
+      - key: PORT
+        value: "10000"
       - key: DATABASE_URL
         fromDatabase:
           name: shoestore-db
           property: connectionString
-
+      - key: JWT_SECRET
+        value: "set-in-dashboard"
+      - key: JWT_REFRESH_SECRET
+        value: "set-in-dashboard"
+      - key: COOKIE_SECRET
+        value: "set-in-dashboard"
+      - key: CSRF_SECRET
+        value: "set-in-dashboard"
       - key: STRIPE_SECRET_KEY
-        value: ""
+        value: "set-in-dashboard"
       - key: STRIPE_WEBHOOK_SECRET
-        value: ""
-
-databases:
-  - name: shoestore-db
-    plan: free
+        value: "set-in-dashboard"
+      - key: IMAGE_DOMAIN_ALLOWLIST
+        value: "images.unsplash.com,cdn.example.com"
+      - key: CORS_ALLOWLIST
+        value: "http://localhost:3000,https://*.vercel.app"
