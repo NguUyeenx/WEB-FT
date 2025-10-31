@@ -1,0 +1,62 @@
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: shoestore-db
+    plan: starter
+    region: oregon
+    databaseName: shoestore
+    databaseUser: shoestore
+
+  # API Service
+  - type: web
+    name: shoestore-api
+    runtime: node
+    region: oregon
+    plan: starter
+    buildCommand: |
+      corepack enable
+      corepack prepare pnpm@latest --activate
+      pnpm install --frozen-lockfile
+      cd apps/api
+      pnpm prisma generate
+      pnpm prisma migrate deploy
+      pnpm build
+    startCommand: node apps/api/dist/src/index.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: HOST
+        value: 0.0.0.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: shoestore-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: COOKIE_SECRET
+        generateValue: true
+      - key: CSRF_SECRET
+        generateValue: true
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: IMAGE_DOMAIN_ALLOWLIST
+        value: cdn.example.com  # Update with actual CDN domains
+      - key: CORS_ALLOWLIST
+        value: http://localhost:3000,https://*.vercel.app
+    autoDeploy: true
+    previewsEnabled: true
+    previewsExpireAfterDays: 7
+
+databases:
+  - name: shoestore-db
+    databaseName: shoestore
+    user: shoestore
+    plan: starter
+    region: oregon
