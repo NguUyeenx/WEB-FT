@@ -15,7 +15,7 @@ This is a monorepo managed with `pnpm`:
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - pnpm 8+
 - PostgreSQL 14+
 
@@ -62,12 +62,11 @@ The API is deployed on Render using the `render.yaml` Blueprint.
 1. **Connect Repository**: In Render dashboard, create a new Blueprint and connect this repository
 2. **Configure Secrets**: Set the following environment variables in Render:
    - `JWT_SECRET` - Secret for signing access tokens
-   - `JWT_REFRESH_SECRET` - Secret for signing refresh tokens  
+   - `JWT_REFRESH_SECRET` - Secret for signing refresh tokens
    - `COOKIE_SECRET` - Secret for signed cookies
    - `CSRF_SECRET` - Secret for CSRF tokens
    - `STRIPE_SECRET_KEY` - Stripe secret key for payments
    - `STRIPE_WEBHOOK_SECRET` - Stripe webhook secret
-   
 3. **Database**: The Blueprint automatically provisions a PostgreSQL database
 4. **Health Check**: Render pings `/health` endpoint to verify service health
 5. **PR Previews**: Enable preview environments for pull requests in Render settings
@@ -78,6 +77,7 @@ The API is deployed on Render using the `render.yaml` Blueprint.
 #### Environment Variables:
 
 The render.yaml configures:
+
 - `PORT=10000` (Render default)
 - `CORS_ALLOWLIST=http://localhost:3000,https://*.vercel.app` (supports wildcard patterns)
 - `IMAGE_DOMAIN_ALLOWLIST` for allowed image sources
@@ -91,12 +91,14 @@ The Next.js web app is deployed on Vercel.
 
 1. **Import Project**: In Vercel dashboard, import this repository
 2. **Configure Project**:
+
    - **Root Directory**: `apps/web`
    - **Framework Preset**: Next.js
    - **Build Command**: `cd ../.. && pnpm install && cd apps/web && pnpm build`
    - **Install Command**: `pnpm install`
 
 3. **Environment Variables**: Add in Vercel project settings:
+
    ```
    NEXT_PUBLIC_SITE_URL=https://your-app.vercel.app
    BACKEND_URL=https://shoestore-api.onrender.com
@@ -104,10 +106,11 @@ The Next.js web app is deployed on Vercel.
    ```
 
 4. **API Proxy**: Next.js rewrites proxy `/api/*` requests to the Render API:
+
    - Local: Proxies to `http://localhost:4000`
    - Preview/Production: Proxies to `BACKEND_URL` (Render API)
 
-5. **Preview Deployments**: 
+5. **Preview Deployments**:
    - Vercel automatically creates preview URLs for each PR
    - Preview URL format: `https://<branch>-<project>.vercel.app`
    - Vercel bot comments the preview URL on each PR
@@ -116,6 +119,7 @@ The Next.js web app is deployed on Vercel.
 #### Vercel Bot Integration:
 
 The Vercel GitHub bot automatically:
+
 - Builds and deploys preview environments for PRs
 - Posts preview URLs as PR comments
 - Updates deployment status on commits
@@ -136,11 +140,13 @@ The wildcard `https://*.vercel.app` matches all Vercel preview and production UR
 Both API and Web apps include security hardening:
 
 **API (Fastify + Helmet)**:
+
 - Content Security Policy (CSP)
 - Rate limiting (100 requests per 15 min)
 - Secure cookie configuration
 
 **Web (Next.js headers)**:
+
 - X-Frame-Options: DENY
 - X-Content-Type-Options: nosniff
 - X-XSS-Protection
@@ -152,6 +158,7 @@ Both API and Web apps include security hardening:
 See `.env.example` for all required environment variables with descriptions.
 
 Key variables:
+
 - `DATABASE_URL` - PostgreSQL connection string
 - `BACKEND_URL` - API URL for Next.js proxy (used in rewrites)
 - `CORS_ALLOWLIST` - Allowed origins for API (supports wildcards)
