@@ -9,7 +9,7 @@ const wishlistsRoutes: FastifyPluginAsync = async (fastify) => {
     },
     async (request) => {
       const wishlists = await fastify.prisma.wishlist.findMany({
-        where: { userId: request.user!.id },
+        where: { userId: ((request.user as any)).id },
         include: {
           product: {
             include: {
@@ -40,7 +40,7 @@ const wishlistsRoutes: FastifyPluginAsync = async (fastify) => {
       const existing = await fastify.prisma.wishlist.findUnique({
         where: {
           userId_productId: {
-            userId: request.user!.id,
+            userId: (request.user as any).id,
             productId,
           },
         },
@@ -55,7 +55,7 @@ const wishlistsRoutes: FastifyPluginAsync = async (fastify) => {
 
       const wishlist = await fastify.prisma.wishlist.create({
         data: {
-          userId: request.user!.id,
+          userId: (request.user as any).id,
           productId,
         },
       });
@@ -78,7 +78,7 @@ const wishlistsRoutes: FastifyPluginAsync = async (fastify) => {
 
       await fastify.prisma.wishlist.deleteMany({
         where: {
-          userId: request.user!.id,
+          userId: (request.user as any).id,
           productId,
         },
       });

@@ -44,7 +44,7 @@ export default function ProductDetailPage() {
     );
   }
 
-  const product = data?.data;
+  const product = (data as any)?.data;
   if (!product) return <div>Product not found</div>;
 
   const variant = selectedVariant

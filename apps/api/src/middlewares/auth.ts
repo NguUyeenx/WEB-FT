@@ -1,15 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 
-declare module 'fastify' {
-  interface FastifyRequest {
-    user?: {
-      id: string;
-      email: string;
-      role: string;
-    };
-  }
-}
-
 export async function requireAuth(request: FastifyRequest, reply: FastifyReply) {
   try {
     await request.jwtVerify();
@@ -24,8 +14,9 @@ export async function requireAuth(request: FastifyRequest, reply: FastifyReply) 
 export async function requireAdmin(request: FastifyRequest, reply: FastifyReply) {
   try {
     await request.jwtVerify();
+    const user = request.user as any;
     
-    if (!request.user || request.user.role !== 'ADMIN') {
+    if (!user || user.role !== 'ADMIN') {
       reply.status(403).send({
         success: false,
         message: 'Admin access required',

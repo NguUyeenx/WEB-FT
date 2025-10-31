@@ -8,7 +8,7 @@ const reviewsRoutes: FastifyPluginAsync = async (fastify) => {
     {
       preHandler: [fastify.authenticate],
     },
-    async (request, reply) => {
+    async (request) => {
       const body = CreateReviewSchema.parse(request.body);
 
       // Sanitize user input
@@ -18,7 +18,7 @@ const reviewsRoutes: FastifyPluginAsync = async (fastify) => {
       const review = await fastify.prisma.review.create({
         data: {
           productId: body.productId,
-          userId: request.user!.id,
+          userId: (request.user as any).id,
           rating: body.rating,
           title: sanitizedTitle,
           comment: sanitizedComment,

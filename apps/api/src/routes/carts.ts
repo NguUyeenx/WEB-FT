@@ -10,7 +10,7 @@ const cartRoutes: FastifyPluginAsync = async (fastify) => {
     },
     async (request) => {
       let cart = await fastify.prisma.cart.findFirst({
-        where: { userId: request.user!.id },
+        where: { userId: (request.user as any).id },
         include: {
           items: {
             include: {
@@ -33,7 +33,7 @@ const cartRoutes: FastifyPluginAsync = async (fastify) => {
       if (!cart) {
         cart = await fastify.prisma.cart.create({
           data: {
-            userId: request.user!.id,
+            userId: (request.user as any).id,
           },
           include: {
             items: {
@@ -73,13 +73,13 @@ const cartRoutes: FastifyPluginAsync = async (fastify) => {
 
       // Get or create cart
       let cart = await fastify.prisma.cart.findFirst({
-        where: { userId: request.user!.id },
+        where: { userId: (request.user as any).id },
       });
 
       if (!cart) {
         cart = await fastify.prisma.cart.create({
           data: {
-            userId: request.user!.id,
+            userId: (request.user as any).id,
           },
         });
       }
@@ -165,7 +165,7 @@ const cartRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
 
-      if (!item || item.cart.userId !== request.user!.id) {
+      if (!item || item.cart.userId !== (request.user as any).id) {
         return reply.status(404).send({
           success: false,
           message: 'Cart item not found',
@@ -214,7 +214,7 @@ const cartRoutes: FastifyPluginAsync = async (fastify) => {
       await fastify.prisma.cartItem.deleteMany({
         where: {
           cart: {
-            userId: request.user!.id,
+            userId: (request.user as any).id,
           },
         },
       });

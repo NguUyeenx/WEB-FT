@@ -15,7 +15,7 @@ const ordersRoutes: FastifyPluginAsync = async (fastify) => {
     },
     async (request) => {
       const orders = await fastify.prisma.order.findMany({
-        where: { userId: request.user!.id },
+        where: { userId: (request.user as any).id },
         include: {
           items: true,
           shippingAddress: true,
@@ -57,7 +57,7 @@ const ordersRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
 
-      if (!order || order.userId !== request.user!.id) {
+      if (!order || order.userId !== ((request.user as any)).id) {
         return reply.status(404).send({
           success: false,
           message: 'Order not found',
@@ -102,7 +102,7 @@ const ordersRoutes: FastifyPluginAsync = async (fastify) => {
 
       // Check stock availability
       for (const item of body.items) {
-        const variant = variants.find((v) => v.id === item.variantId);
+        const variant = variants.find((v: any) => v.id === item.variantId);
         if (!variant) continue;
 
         const availableStock = (variant.inventory?.quantity || 0) - (variant.inventory?.reserved || 0);
@@ -115,8 +115,8 @@ const ordersRoutes: FastifyPluginAsync = async (fastify) => {
       }
 
       // Calculate totals
-      const subtotal = body.items.reduce((sum, item) => {
-        const variant = variants.find((v) => v.id === item.variantId)!;
+      const subtotal = body.items.reduce((sum: number, item: any) => {
+        const variant = variants.find((v: any) => v.id === item.variantId)!;
         return sum + (variant.product.basePrice + variant.priceAdjustment) * item.quantity;
       }, 0);
 
@@ -127,7 +127,7 @@ const ordersRoutes: FastifyPluginAsync = async (fastify) => {
       // Create order
       const order = await fastify.prisma.order.create({
         data: {
-          userId: request.user!.id,
+          userId: ((request.user as any)).id,
           orderNumber: generateOrderNumber(),
           subtotal,
           tax,
@@ -135,8 +135,8 @@ const ordersRoutes: FastifyPluginAsync = async (fastify) => {
           total,
           shippingAddressId: body.shippingAddressId,
           items: {
-            create: body.items.map((item) => {
-              const variant = variants.find((v) => v.id === item.variantId)!;
+            create: body.items.map((item: any) => {
+              const variant = variants.find((v: any) => v.id === item.variantId)!;
               return {
                 variantId: item.variantId,
                 quantity: item.quantity,
@@ -197,7 +197,7 @@ const ordersRoutes: FastifyPluginAsync = async (fastify) => {
         const orderId = paymentIntent.metadata.orderId;
 
         // Update order and decrement inventory in transaction
-        await fastify.prisma.$transaction(async (tx) => {
+        await fastify.prisma.$transaction(async (tx: any) => {
           const order = await tx.order.update({
             where: { id: orderId },
             data: {

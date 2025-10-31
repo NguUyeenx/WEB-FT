@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useAuthStore } from '@/stores/auth';
 import { useUIStore } from '@/stores/ui';
 import { Button } from '@ui/Button';
-import { ShoppingCartIcon, UserIcon, HeartIcon } from '@radix-ui/react-icons';
+import { HeartIcon, PersonIcon } from '@radix-ui/react-icons';
 
 export function Navbar() {
   const user = useAuthStore((state) => state.user);
@@ -48,11 +48,11 @@ export function Navbar() {
                 onClick={toggleMiniCart}
                 aria-label="Shopping cart"
               >
-                <ShoppingCartIcon className="h-5 w-5" />
+                <span className="text-xl">🛒</span>
               </Button>
               <Link href="/account">
                 <Button variant="ghost" size="icon" aria-label="Account">
-                  <UserIcon className="h-5 w-5" />
+                  <PersonIcon className="h-5 w-5" />
                 </Button>
               </Link>
               <Button

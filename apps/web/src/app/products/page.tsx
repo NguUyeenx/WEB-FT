@@ -37,8 +37,8 @@ export default function ProductsPage() {
     );
   }
 
-  const products = data?.data || [];
-  const meta = data?.meta;
+  const products = (data as any)?.data || [];
+  const meta = (data as any)?.meta;
 
   return (
     <div className="container mx-auto px-4 py-8">
